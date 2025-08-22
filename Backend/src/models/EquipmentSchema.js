@@ -50,6 +50,11 @@ const equipmentSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    status: {
+      type: String,
+      enum: ["available", "sold"],
+      default: "available",
+    },
     postedOn: {
       type: Date,
       default: Date.now,
