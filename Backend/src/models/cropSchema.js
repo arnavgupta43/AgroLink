@@ -22,9 +22,9 @@ const cropSchema = new mongoose.Schema(
       required: [true, "Expected price is required"],
       min: [1, "Price must be a positive number"],
     },
-    imageUrl: {
-      type: String,
-      default: "",
+    photoUrl: {
+      url: { type: String, default: "" },
+      publicId: { type: String, default: "" },
     },
     description: {
       type: String,
@@ -45,6 +45,10 @@ const cropSchema = new mongoose.Schema(
       type: String,
       required: true,
       lowercase: true,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
     },
     postedOn: {
       type: Date,

@@ -32,9 +32,9 @@ const equipmentSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    imageUrl: {
-      type: String,
-      default: "",
+    photoUrl: {
+      url: { type: String, default: "" },
+      publicId: { type: String, default: "" },
     },
     description: {
       type: String,
@@ -45,6 +45,10 @@ const equipmentSchema = new mongoose.Schema(
       type: String,
       enum: ["Tractor", "Plough", "Harvester", "Sprayer", "Other"],
       default: "Other",
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
     },
     postedOn: {
       type: Date,
