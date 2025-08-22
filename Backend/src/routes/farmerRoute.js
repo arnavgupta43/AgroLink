@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/multerMiddleware");
-const { validate } = require("../middlewares/validationMiddleware");
-const validationMiddleware = require("../middlewares/authMiddleware");
-const checkRole = require("../middlewares/checkRoleMiddleware");
+const { validate } = require("../middleware/validationMiddleware");
+const validationMiddleware = require("../middleware/authMiddleware");
+const checkRole = require("../middleware/checkRoleMiddleware");
 
 const {
   createCrop,
