@@ -66,4 +66,84 @@ const buyCrop = async (req, res, next) => {
     return next(error);
   }
 };
-module.exports = { getAllCrops, buyCrop };
+
+const createEquipment = async (req, res, next) => {
+  try {
+    const { ownerId, name, type, price, location, description, category } =
+      req.body;
+    if (
+      !ownerId ||
+      !name ||
+      !type ||
+      !price ||
+      !location ||
+      !description ||
+      !category
+    ) {
+      const err = new Error("Please provide all required Equipment fields");
+      err.statusCode = StatusCodes.BAD_REQUEST;
+      return next(err);
+    }
+    let photoUrl = "";
+
+    if (req.file && req.file.path) {
+      const { url, publicId } = await uploadOnCloudinary(req.file.path);
+      photoUrl = { url, publicId };
+    }
+    const equipment = await Equipment.create({
+      ownerId,
+      name,
+      type,
+      price,
+      location,
+      description,
+      category,
+      photoUrl,
+    });
+    if (!equipment) {
+      const err = new Error("Unable to create equipment");
+      err.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+      return next(err);
+    }
+
+    return res
+      .status(StatusCodes.CREATED)
+      .json({ status: "success", data: equipment });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const getAllListing = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+
+    // query: ?status=available or ?status=sold
+    const { status, sortBy } = req.query;
+
+    const query = { ownerId: _id };
+    if (status) {
+      query.status = status;
+    }
+    let sortCondition = { status: 1, postedOn: -1 };
+
+    if (sortBy === "latest") {
+      sortCondition = { postedOn: -1 };
+    } else if (sortBy === "oldest") {
+      sortCondition = { postedOn: 1 };
+    } else if (sortBy === "soldFirst") {
+      sortCondition = { status: 1, postedOn: -1 };
+    }
+
+    const allListing = await Equipment.find(query).sort(sortCondition);
+
+    return res.status(StatusCodes.OK).json({
+      status: "Success",
+      total: allListing.length,
+      equipment: allListing,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+module.exports = { getAllCrops, buyCrop, createEquipment, getAllListing };

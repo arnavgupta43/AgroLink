@@ -42,11 +42,11 @@ const createCrop = async (req, res, next) => {
       return next(err);
     }
 
-    let imageUrl = "";
+    let photoUrl = "";
 
     if (req.file && req.file.path) {
       const { url, publicId } = await uploadOnCloudinary(req.file.path);
-      imageUrl = { url, publicId };
+      photoUrl = { url, publicId };
     }
 
     const crop = await Crop.create({
@@ -58,7 +58,7 @@ const createCrop = async (req, res, next) => {
       category,
       status,
       location,
-      imageUrl,
+      photoUrl,
     });
 
     if (!crop) {
@@ -134,4 +134,41 @@ const getEquipmentListing = async (req, res, next) => {
     return next(error);
   }
 };
-module.exports = { createCrop, getAllListing, getEquipmentListing };
+
+const buyEquipment = async (req, res, next) => {
+  try {
+    const { equipId } = req.body;
+    if (!isValidObjectId(equipId)) {
+      const err = new Error("Invalid crop ID");
+      err.statusCode = StatusCodes.BAD_REQUEST;
+      return next(err);
+    }
+    const equipment = await Equipment.findById(equipId);
+    if (!equipment) {
+      const err = new Error("Equipment not found");
+      err.statusCode = StatusCodes.NOT_FOUND;
+      return next(err);
+    }
+    if (equipment.status === "sold") {
+      return res.status(StatusCodes.CONFLICT).json({
+        status: "failed",
+        msg: "equipment already sold",
+      });
+    }
+
+    equipment.status = "sold";
+    await equipment.save();
+    return res.status(StatusCodes.OK).json({
+      status: "success",
+      msg: "Order placed successfully",
+      cropId: equipId,
+    });
+  } catch (error) {}
+};
+
+module.exports = {
+  createCrop,
+  getAllListing,
+  getEquipmentListing,
+  buyEquipment,
+};
