@@ -41,6 +41,11 @@ const cropSchema = new mongoose.Schema(
       enum: ["available", "sold"],
       default: "available",
     },
+    location: {
+      type: String,
+      required: true,
+      lowercase: true,
+    },
     postedOn: {
       type: Date,
       default: Date.now,

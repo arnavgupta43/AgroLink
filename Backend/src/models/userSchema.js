@@ -38,7 +38,8 @@ const userSchema = new mongoose.Schema(
     },
     location: {
       type: String,
-      default: "Not specified",
+      lowercase: true,
+      required: true,
     },
     avatarUrl: {
       type: String,
